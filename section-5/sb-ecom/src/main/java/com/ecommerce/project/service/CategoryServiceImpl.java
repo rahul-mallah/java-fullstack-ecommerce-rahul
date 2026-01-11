@@ -38,32 +38,33 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public void createCategory(Category category) {
-        Category savedCategory = categoryRepository.findByCategoryName(category.getCategoryName());
+    public CategoryDTO createCategory(CategoryDTO categoryDTO) {
+        Category mappedCategory = modelMapper.map(categoryDTO, Category.class);
+        Category savedCategory = categoryRepository.findByCategoryName(mappedCategory.getCategoryName());
         if (savedCategory != null)
-            throw new APIException("Category with the name " + category.getCategoryName()+ " already exists !!!");
+            throw new APIException("Category with the name " + mappedCategory.getCategoryName()+ " already exists !!!");
 
-        categoryRepository.save(category);
+        categoryRepository.save(mappedCategory);
+        return modelMapper.map(mappedCategory, CategoryDTO.class);
     }
 
     @Override
-    public String deleteCategory(Long categoryId) {
+    public CategoryDTO deleteCategory(Long categoryId) {
         Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category","categoryId",categoryId));
 
         categoryRepository.delete(category);
-        return "Category with categoryId: " + categoryId + " successfully deleted!!";
+        return modelMapper.map(category, CategoryDTO.class);
     }
 
     @Override
-    public Category updateCategory(Long categoryId, Category category) {
-
+    public CategoryDTO updateCategory(Long categoryId, CategoryDTO categoryDTO) {
+        Category category = modelMapper.map(categoryDTO, Category.class);
         Category savedCategory = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category", "categoryId", categoryId));
 
         category.setCategoryId(categoryId);
         savedCategory = categoryRepository.save(category);
-        return savedCategory;
-
+        return modelMapper.map(savedCategory, CategoryDTO.class);
     }
 }
