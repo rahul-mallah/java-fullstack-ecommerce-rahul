@@ -16,14 +16,13 @@ public class SocialUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Setter(AccessLevel.NONE)
-    @OneToOne(mappedBy = "socialUser", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "socialUser", cascade = {CascadeType.REMOVE, CascadeType.PERSIST, CascadeType.MERGE})
     private SocialProfile socialProfile;
 
     @OneToMany(mappedBy = "socialUser")
     private List<Post> posts = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "user_group",
             joinColumns = @JoinColumn(name = "user_id"),
@@ -37,11 +36,20 @@ public class SocialUser {
         return Objects.hash(id);
     }
 
+    // this custom setter does not seem to work
     public void setSocialProfile(SocialProfile socialProfile) {
         if (this.socialProfile == socialProfile) return; // Break recursion
         this.socialProfile = socialProfile;
         if (socialProfile != null) {
             socialProfile.setSocialUser(this);
+        }
+    }
+
+    @PrePersist
+    @PreUpdate
+    public void syncSocialProfile(){
+        if (this.socialProfile != null){
+            this.socialProfile.setSocialUser(this);
         }
     }
 }

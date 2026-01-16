@@ -97,6 +97,10 @@ public class DataInitializer {
             socialProfileRepository.save(profile1);
             socialProfileRepository.save(profile2);
             socialProfileRepository.save(profile3);
+
+            //fetch lazy and eager type
+            System.out.println("Fetch Type Testing");
+            userRepository.findById(1L);
         };
     }
 }
