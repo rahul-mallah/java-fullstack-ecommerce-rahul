@@ -77,9 +77,9 @@ public class ProductServiceImpl implements ProductService {
         Page<Product> productsPage = productRepository.findAll(pageDetails);
 
         List<Product> products = productsPage.getContent();
-        if (products.isEmpty()) {
-            throw new APIException("No products created till now!!!");
-        }
+//        if (products.isEmpty()) {
+//            throw new APIException("No products created till now!!!");
+//        }
         List<ProductDTO> productDTOS = products.stream()
                 .map(product -> modelMapper.map(product, ProductDTO.class))
                 .toList();
